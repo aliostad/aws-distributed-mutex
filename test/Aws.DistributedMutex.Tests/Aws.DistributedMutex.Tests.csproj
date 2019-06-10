@@ -17,5 +17,8 @@
       <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.101.22" />
 
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Aws.DistributedMutex\Aws.DistributedMutex.csproj" />
+    </ItemGroup>
     
 </Project>

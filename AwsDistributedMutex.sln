@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aws.DistributedMutex", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0F1782C7-45F4-4F85-BA9D-78B2ACF74C20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aws.DistributedMutext.Tests", "test\Aws.DistributedMutext.Tests\Aws.DistributedMutext.Tests.csproj", "{386FD3AB-5997-411B-BA10-B50CB9008B3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aws.DistributedMutex.Tests", "test\Aws.DistributedMutex.Tests\Aws.DistributedMutex.Tests.csproj", "{386FD3AB-5997-411B-BA10-B50CB9008B3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

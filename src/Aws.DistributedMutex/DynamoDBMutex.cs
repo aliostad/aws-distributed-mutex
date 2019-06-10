@@ -17,7 +17,7 @@ namespace Aws.DistributedMutex
 
         private class ColumnNames
         {
-            public const string ResourceId = "ResourceId";
+            public const string ResourceId = "resourceId";
             public const string LeaseExpiry = "leaseExpiry";
             public const string HolderId = "holderId";
         }
@@ -112,7 +112,7 @@ namespace Aws.DistributedMutex
 
                 return new LockToken(_id, resourceId, expiry);
             }
-            catch
+            catch (ConditionalCheckFailedException e)
             {
                 return null;
             }
@@ -149,9 +149,9 @@ namespace Aws.DistributedMutex
                     ConditionalExpression = expr
                 });
 
-                return new LockToken(_id, token.ResourceId, expiry);
+                return token.WithNewExpiry(expiry);
             }
-            catch
+            catch (ConditionalCheckFailedException e)
             {
                 return null;
             }
