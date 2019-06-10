@@ -9,6 +9,12 @@ namespace Aws.DistributedMutex
     {
         Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration);
 
+        /// <summary>
+        /// Before expiry
+        /// </summary>
+        /// <returns></returns>
+        Task<LockToken> RenewAsync(LockToken token, TimeSpan duration);
+
         Task ReleaseLockAsync(LockToken token);
     }
 }

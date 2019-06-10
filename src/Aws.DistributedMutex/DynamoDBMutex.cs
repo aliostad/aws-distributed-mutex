@@ -1,4 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
 using System;
 using System.Collections.Generic;
@@ -10,9 +12,23 @@ namespace Aws.DistributedMutex
     public class DynamoDBMutex : IMutex
     {
         private readonly DynamoDBMutexSettings _settings;
+        private readonly IAmazonDynamoDB _client;
+        private readonly string _id = Guid.NewGuid().ToString("N");
 
-        public DynamoDBMutex(DynamoDBMutexSettings settings = null)
-            : this(new AmazonDynamoDBClient(), settings)
+        private class ColumnNames
+        {
+            public const string ResourceId = "ResourceId";
+            public const string LeaseExpiry = "leaseExpiry";
+            public const string HolderId = "holderId";
+        }
+
+        /// <summary>
+        /// Assumes access id and key are in the env vars or config
+        /// </summary>
+        /// <param name="endpoint"></param>
+        /// <param name="settings"></param>
+        public DynamoDBMutex(RegionEndpoint endpoint, DynamoDBMutexSettings settings = null)
+            : this (new AmazonDynamoDBClient(endpoint), settings)
         {
             
         }
@@ -20,17 +36,126 @@ namespace Aws.DistributedMutex
         public DynamoDBMutex(IAmazonDynamoDB client, DynamoDBMutexSettings settings = null)
         {
             _settings = settings ?? new DynamoDBMutexSettings();
-
+            _client = client;
         }
 
-        public Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration)
+        private async Task<Table> GetTableAsync()
         {
-            throw new NotImplementedException();
+            if (_settings.CreateTableIfNotExists)
+            {
+                try
+                {
+                    await _client.CreateTableAsync(new CreateTableRequest()
+                    {
+                        TableName = _settings.TableName,
+                        AttributeDefinitions = new List<AttributeDefinition>
+                    {
+                        new AttributeDefinition()
+                        {
+                            AttributeType = ScalarAttributeType.S,
+                            AttributeName = ColumnNames.ResourceId
+                        },
+                        new AttributeDefinition()
+                        {
+                            AttributeType = ScalarAttributeType.S,
+                            AttributeName = ColumnNames.LeaseExpiry
+                        },
+                        new AttributeDefinition()
+                        {
+                            AttributeType = ScalarAttributeType.S,
+                            AttributeName = ColumnNames.HolderId
+                        }
+                    },
+                        KeySchema = new List<KeySchemaElement>
+                        {
+                            new KeySchemaElement()
+                            {
+                                KeyType = KeyType.HASH,
+                                AttributeName = ColumnNames.ResourceId
+                            }
+                        },
+                        ProvisionedThroughput = new ProvisionedThroughput
+                        {
+                            ReadCapacityUnits = 1,
+                            WriteCapacityUnits = 1
+                        }
+                        });
+                }
+                catch (ResourceInUseException e)
+                {
+                    // ignore, already exists
+                }
+            }
+
+            return Table.LoadTable(_client, _settings.TableName);
         }
 
-        public Task ReleaseLockAsync(LockToken token)
+        public async Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration)
         {
-            throw new NotImplementedException();
+            var table = await GetTableAsync();
+            var doc = new Document();
+            doc[ColumnNames.HolderId] = _id;
+            doc[ColumnNames.ResourceId] = resourceId;
+            var expiry = DateTimeOffset.UtcNow.Add(duration);
+            doc[ColumnNames.LeaseExpiry] = expiry.ToString("O");
+
+            var expr = new Expression();
+            expr.ExpressionStatement = $"attribute_not_exists({ColumnNames.ResourceId}) OR {ColumnNames.LeaseExpiry} < :NOW";
+            expr.ExpressionAttributeValues[":NOW"] = DateTimeOffset.UtcNow.ToString("O");
+
+            try
+            {
+                await table.PutItemAsync(doc, new PutItemOperationConfig()
+                {
+                    ConditionalExpression = expr
+                });
+
+                return new LockToken(_id, resourceId, expiry);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task ReleaseLockAsync(LockToken token)
+        {
+            var table = await GetTableAsync();
+            var doc = new Document();
+            doc[ColumnNames.HolderId] = token.HolderId;
+            doc[ColumnNames.ResourceId] = token.ResourceId;
+            doc[ColumnNames.LeaseExpiry] = token.LeaseExpiry.ToString("O");
+            await table.DeleteItemAsync(doc);
+        }
+
+        public async Task<LockToken> RenewAsync(LockToken token, TimeSpan duration)
+        {
+            var table = await GetTableAsync();
+            var doc = new Document();
+            doc[ColumnNames.HolderId] = token.HolderId;
+            doc[ColumnNames.ResourceId] = token.ResourceId;
+            var expiry = DateTimeOffset.UtcNow.Add(duration);
+            doc[ColumnNames.LeaseExpiry] = expiry.ToString("O");
+
+            var expr = new Expression();
+            expr.ExpressionStatement = $"{ColumnNames.ResourceId} = :ID OR {ColumnNames.LeaseExpiry} < :NOW";
+            expr.ExpressionAttributeValues[":NOW"] = DateTimeOffset.UtcNow.ToString("O");
+            expr.ExpressionAttributeValues[":ID"] = token.ResourceId;
+
+            try
+            {
+                await table.PutItemAsync(doc, new PutItemOperationConfig()
+                {
+                    ConditionalExpression = expr
+                });
+
+                return new LockToken(_id, token.ResourceId, expiry);
+            }
+            catch
+            {
+                return null;
+            }
+
         }
     }
 }
