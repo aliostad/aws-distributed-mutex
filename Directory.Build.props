@@ -3,7 +3,7 @@
 	<Description>Distributed Mutex in AWS</Description>  
     <Authors>Ali Kheyrollahi</Authors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
 	<PackageProjectUrl>https://github.com/aliostad/aws-distributed-mutex</PackageProjectUrl>
 	<PackageLicenseUrl>https://github.com/aliostad/aws-distributed-mutex/blob/master/LICENSE</PackageLicenseUrl>	
   </PropertyGroup>
