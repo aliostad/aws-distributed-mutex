@@ -121,6 +121,27 @@ namespace Aws.DistributedMutex.Tests
             Assert.Equal(1, i);
         }
 
+        [EnvVarIgnoreFact(EnvVarName)]
+        public async Task CanReleaseAndAcquireAgain()
+        {
+            var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
+            var resId = Guid.NewGuid().ToString("N");
+            var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            await m.ReleaseLockAsync(t);
+            var t2 = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            Assert.NotNull(t2);
+        }
+
+        [EnvVarIgnoreFact(EnvVarName)]
+        public async Task CreatesTableCorrectly()
+        {
+            var m = new DynamoDBMutex(RegionEndpoint.EUWest1, new DynamoDBMutexSettings() { TableName = "LockTestDeleteMe", CreateTableIfNotExists = true} );
+            var resId = Guid.NewGuid().ToString("N");
+            var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            await m.ReleaseLockAsync(t);
+            var t2 = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            Assert.NotNull(t2);
+        }
 
     }
 }

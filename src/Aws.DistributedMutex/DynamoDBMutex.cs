@@ -55,23 +55,13 @@ namespace Aws.DistributedMutex
                     {
                         TableName = _settings.TableName,
                         AttributeDefinitions = new List<AttributeDefinition>
-                    {
-                        new AttributeDefinition()
                         {
-                            AttributeType = ScalarAttributeType.S,
-                            AttributeName = ColumnNames.ResourceId
+                            new AttributeDefinition()
+                            {
+                                AttributeType = ScalarAttributeType.S,
+                                AttributeName = ColumnNames.ResourceId
+                            }
                         },
-                        new AttributeDefinition()
-                        {
-                            AttributeType = ScalarAttributeType.S,
-                            AttributeName = ColumnNames.LeaseExpiry
-                        },
-                        new AttributeDefinition()
-                        {
-                            AttributeType = ScalarAttributeType.S,
-                            AttributeName = ColumnNames.HolderId
-                        }
-                    },
                         KeySchema = new List<KeySchemaElement>
                         {
                             new KeySchemaElement()
@@ -86,6 +76,8 @@ namespace Aws.DistributedMutex
                             WriteCapacityUnits = 1
                         }
                         });
+
+                    await Task.Delay(TimeSpan.FromSeconds(10)); // need to wait a bit since the table has just been created 
                 }
                 catch (ResourceInUseException e)
                 {
