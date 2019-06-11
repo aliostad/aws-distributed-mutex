@@ -34,7 +34,9 @@ namespace Aws.DistributedMutex.Tests
 
     public class DynamoDBMutexTests
     {
-        [EnvVarIgnoreFact("aws_access_key_id")]
+        private const string EnvVarName = "aws_access_key_id";
+
+        [EnvVarIgnoreFact(EnvVarName)]
         public async Task CanGetLock()
         {
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -42,7 +44,7 @@ namespace Aws.DistributedMutex.Tests
             Assert.NotNull(t);
         }
 
-        [EnvVarIgnoreFact("aws_access_key_id")]
+        [EnvVarIgnoreFact(EnvVarName)]
         public async Task CanNotGetLockOnTheSameItemTwice()
         {
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -52,7 +54,7 @@ namespace Aws.DistributedMutex.Tests
             Assert.Null(t2);
         }
 
-        [EnvVarIgnoreFact("aws_access_key_id")]
+        [EnvVarIgnoreFact(EnvVarName)]
         public async Task CanRenew()
         {
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -62,7 +64,7 @@ namespace Aws.DistributedMutex.Tests
             Assert.NotNull(t2);
         }
 
-        [EnvVarIgnoreFact("aws_access_key_id")]
+        [EnvVarIgnoreFact(EnvVarName)]
         public async Task CanNotRenewIfSomeoneElse()
         {
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -73,8 +75,7 @@ namespace Aws.DistributedMutex.Tests
             Assert.Null(t2);
         }
 
-
-        [EnvVarIgnoreFact("aws_access_key_id")]
+        [EnvVarIgnoreFact(EnvVarName)]
         public async Task Race()
         {
             var m1 = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -95,6 +96,31 @@ namespace Aws.DistributedMutex.Tests
 
             Assert.Equal(1, i);
         }
+
+        [EnvVarIgnoreFact(EnvVarName)]
+        public async Task RaceAsync()
+        {
+            var m1 = new DynamoDBMutex(RegionEndpoint.EUWest1);
+            var m2 = new DynamoDBMutex(RegionEndpoint.EUWest1);
+            var m3 = new DynamoDBMutex(RegionEndpoint.EUWest1);
+            var resId = Guid.NewGuid().ToString("N");
+            var t1 = m1.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            var t2 = m2.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            var t3 = m3.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+
+            Task.WaitAll(t1, t2, t3);
+
+            var i = 0;
+            if (t1.Result != null)
+                i++;
+            if (t2.Result != null)
+                i++;
+            if (t3.Result != null)
+                i++;
+
+            Assert.Equal(1, i);
+        }
+
 
     }
 }
