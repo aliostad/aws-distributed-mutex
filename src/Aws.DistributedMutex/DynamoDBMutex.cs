@@ -25,20 +25,26 @@ namespace Aws.DistributedMutex
         /// <summary>
         /// Assumes access id and key are in the env vars or config
         /// </summary>
-        /// <param name="endpoint"></param>
-        /// <param name="settings"></param>
+        /// <param name="endpoint">region</param>
+        /// <param name="settings">settings</param>
         public DynamoDBMutex(RegionEndpoint endpoint, DynamoDBMutexSettings settings = null)
             : this (new AmazonDynamoDBClient(endpoint), settings)
         {
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client">AWS DynamoDB client</param>
+        /// <param name="settings">settings</param>
         public DynamoDBMutex(IAmazonDynamoDB client, DynamoDBMutexSettings settings = null)
         {
             _settings = settings ?? new DynamoDBMutexSettings();
             _client = client;
         }
 
+        /// <inheritdoc />
         private async Task<Table> GetTableAsync()
         {
             if (_settings.CreateTableIfNotExists)
@@ -90,6 +96,7 @@ namespace Aws.DistributedMutex
             return Table.LoadTable(_client, _settings.TableName);
         }
 
+        /// <inheritdoc />
         public async Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration)
         {
             var table = await GetTableAsync();
@@ -118,6 +125,7 @@ namespace Aws.DistributedMutex
             }
         }
 
+        /// <inheritdoc />
         public async Task ReleaseLockAsync(LockToken token)
         {
             var table = await GetTableAsync();
@@ -128,6 +136,7 @@ namespace Aws.DistributedMutex
             await table.DeleteItemAsync(doc);
         }
 
+        /// <inheritdoc />
         public async Task<LockToken> RenewAsync(LockToken token, TimeSpan duration)
         {
             var table = await GetTableAsync();
