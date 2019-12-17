@@ -1,4 +1,4 @@
-﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using System;
     using System.Threading.Tasks;
@@ -14,7 +14,7 @@
         Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration);
 
         /// <summary>
-        /// Renews a lease if still valid or if expired, resource not leased by anoyther holder
+        /// Renews a lease if still valid or if expired, resource not leased by another holder
         /// </summary>
         /// <param name="token">original token</param>
         /// <param name="duration">duration</param>
@@ -24,7 +24,7 @@
         /// <summary>
         /// Terminates the lease/lock only if the holder is still in possession of the lock
         /// </summary>
-        /// <param name="token">originakl token</param>
+        /// <param name="token">original token</param>
         /// <returns></returns>
         Task ReleaseLockAsync(LockToken token);
     }

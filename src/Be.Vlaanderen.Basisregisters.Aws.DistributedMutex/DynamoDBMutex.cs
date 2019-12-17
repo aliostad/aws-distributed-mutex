@@ -1,4 +1,4 @@
-﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using Amazon.DynamoDBv2;
     using Amazon.DynamoDBv2.Model;
@@ -22,7 +22,7 @@
         }
 
         /// <summary>
-        /// Assumes access id and key are in the env vars or config
+        /// Assumes access id and key are in the environment variables or config
         /// </summary>
         /// <param name="endpoint">region</param>
         /// <param name="settings">settings</param>
@@ -34,7 +34,6 @@
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="client">AWS DynamoDB client</param>
         /// <param name="settings">settings</param>

@@ -12,19 +12,44 @@ The use case is mainly scheduling a process/job across multiple consumers where 
 
 In Azure, we can use [lease](https://docs.microsoft.com/en-us/rest/api/storageservices/lease-blob) feature of the Blob Storage to build a distributed mutex. Unfortunately Amazon S3 does not provide a similar feature hence the feature must be built using general features of [DynamoDB](https://aws.amazon.com/dynamodb/).
 
-## Usage
+## DistributedLock Usage
+
+`DistributedLock` is a simplified pattern in which you acquire a lock for the duration of your program. Behind the scenes this is done with an auto-renewing lease.
+
+```csharp
+public class Example
+{
+    public void Main()
+    {
+        var distributedLock = new DistributedLock<Example>(
+            new DistributedLockOptions
+            {
+                Region = RegionEndpoint.EUWest1,
+                LeasePeriod = TimeSpan.FromMinutes(5),
+                ThrowOnFailedRenew = true,
+                TerminateApplicationOnFailedRenew = true
+            });
+
+        if (!distributedLock.AcquireLock())
+        {
+            Console.WriteLine("Could not get lock, another instance is busy");
+            return;
+        }
+
+        // Do stuff
+
+        distributedLock.ReleaseLock();
+    }
+}
+```
+
+## Mutex Usage
 
 ### Create a DynamoDB table
 
 Create a table named `__lock__` (or any other name as long as you pass the name using settings object) with `resourceId` as the key. You may choose to enable TTL for old locks to disappear.
 
 You can also pass a settings object with option to create the table if it does not exist, so this is done in the code.
-
-### Add a reference to the package
-
-``` python
-Install-Package AwsDistributedMutex -Version 1.x.x
-```
 
 ### Create a Mutex
 
