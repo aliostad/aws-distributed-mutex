@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.0...v1.1.1) (2019-12-17)
+
+
+### Bug Fixes
+
+* set the timer interval ([e7ffbce](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/e7ffbce6ba07f1120a98b292f77654e6b9fe703b))
+
 # [1.1.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.0.0...v1.1.0) (2019-12-17)
 
 
