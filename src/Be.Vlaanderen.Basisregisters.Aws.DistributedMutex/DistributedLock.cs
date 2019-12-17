@@ -1,4 +1,6 @@
-﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+using Amazon.DynamoDBv2;
+
+namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using System;
     using System.Timers;
@@ -7,6 +9,10 @@
     public class DistributedLockOptions
     {
         public RegionEndpoint Region { get; set; }
+
+        public string AwsAccessKeyId { get; set; }
+        public string AwsSecretAccessKey { get; set; }
+
         public TimeSpan LeasePeriod { get; set; } = TimeSpan.FromMinutes(5);
 
         public bool ThrowOnFailedRenew { get; set; } = true;
@@ -27,7 +33,10 @@
             _options = options;
 
             _mutex = new DynamoDBMutex(
-                options.Region,
+                new AmazonDynamoDBClient(
+                    options.AwsAccessKeyId,
+                    options.AwsSecretAccessKey,
+                    options.Region),
                 new DynamoDBMutexSettings
                 {
                     CreateTableIfNotExists = true,
