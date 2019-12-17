@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Aws.DistributedMutex
+﻿namespace Aws.DistributedMutex
 {
+    using System;
+    using System.Threading.Tasks;
+
     public interface IMutex
     {
         /// <summary>

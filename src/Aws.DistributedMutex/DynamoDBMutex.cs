@@ -1,13 +1,13 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Amazon;
-using Amazon.DynamoDBv2.DocumentModel;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Aws.DistributedMutex
+﻿namespace Aws.DistributedMutex
 {
+    using Amazon.DynamoDBv2;
+    using Amazon.DynamoDBv2.Model;
+    using Amazon;
+    using Amazon.DynamoDBv2.DocumentModel;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public class DynamoDBMutex : IMutex
     {
         private readonly DynamoDBMutexSettings _settings;
@@ -26,7 +26,9 @@ namespace Aws.DistributedMutex
         /// </summary>
         /// <param name="endpoint">region</param>
         /// <param name="settings">settings</param>
-        public DynamoDBMutex(RegionEndpoint endpoint, DynamoDBMutexSettings settings = null)
+        public DynamoDBMutex(
+            RegionEndpoint endpoint,
+            DynamoDBMutexSettings settings = null)
             : this(new AmazonDynamoDBClient(endpoint), settings)
         {
         }
@@ -36,55 +38,12 @@ namespace Aws.DistributedMutex
         /// </summary>
         /// <param name="client">AWS DynamoDB client</param>
         /// <param name="settings">settings</param>
-        public DynamoDBMutex(IAmazonDynamoDB client, DynamoDBMutexSettings settings = null)
+        public DynamoDBMutex(
+            IAmazonDynamoDB client,
+            DynamoDBMutexSettings settings = null)
         {
             _settings = settings ?? new DynamoDBMutexSettings();
             _client = client;
-        }
-
-        /// <inheritdoc />
-        private async Task<Table> GetTableAsync()
-        {
-            if (_settings.CreateTableIfNotExists)
-            {
-                try
-                {
-                    await _client.CreateTableAsync(new CreateTableRequest
-                    {
-                        TableName = _settings.TableName,
-                        AttributeDefinitions = new List<AttributeDefinition>
-                        {
-                            new AttributeDefinition
-                            {
-                                AttributeType = ScalarAttributeType.S,
-                                AttributeName = ColumnNames.ResourceId
-                            }
-                        },
-                        KeySchema = new List<KeySchemaElement>
-                        {
-                            new KeySchemaElement
-                            {
-                                KeyType = KeyType.HASH,
-                                AttributeName = ColumnNames.ResourceId
-                            }
-                        },
-                        ProvisionedThroughput = new ProvisionedThroughput
-                        {
-                            ReadCapacityUnits = 1,
-                            WriteCapacityUnits = 1
-                        }
-                    });
-
-                    // need to wait a bit since the table has just been created
-                    await Task.Delay(TimeSpan.FromSeconds(10));
-                }
-                catch (ResourceInUseException)
-                {
-                    // ignore, already exists
-                }
-            }
-
-            return Table.LoadTable(_client, _settings.TableName);
         }
 
         /// <inheritdoc />
@@ -112,7 +71,7 @@ namespace Aws.DistributedMutex
 
             try
             {
-                await table.PutItemAsync(doc, new PutItemOperationConfig()
+                await table.PutItemAsync(doc, new PutItemOperationConfig
                 {
                     ConditionalExpression = expr
                 });
@@ -123,21 +82,6 @@ namespace Aws.DistributedMutex
             {
                 return null;
             }
-        }
-
-        /// <inheritdoc />
-        public async Task ReleaseLockAsync(LockToken token)
-        {
-            var table = await GetTableAsync();
-
-            var doc = new Document
-            {
-                [ColumnNames.HolderId] = token.HolderId,
-                [ColumnNames.ResourceId] = token.ResourceId,
-                [ColumnNames.LeaseExpiry] = token.LeaseExpiry.ToString("O")
-            };
-
-            await table.DeleteItemAsync(doc);
         }
 
         /// <inheritdoc />
@@ -176,6 +120,71 @@ namespace Aws.DistributedMutex
             catch (ConditionalCheckFailedException)
             {
                 return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public async Task ReleaseLockAsync(LockToken token)
+        {
+            var table = await GetTableAsync();
+
+            var doc = new Document
+            {
+                [ColumnNames.HolderId] = token.HolderId,
+                [ColumnNames.ResourceId] = token.ResourceId,
+                [ColumnNames.LeaseExpiry] = token.LeaseExpiry.ToString("O")
+            };
+
+            await table.DeleteItemAsync(doc);
+        }
+
+        /// <inheritdoc />
+        private async Task<Table> GetTableAsync()
+        {
+            if (!_settings.CreateTableIfNotExists)
+                return Table.LoadTable(_client, _settings.TableName);
+
+            await CreateTableAsync();
+
+            return Table.LoadTable(_client, _settings.TableName);
+        }
+
+        private async Task CreateTableAsync()
+        {
+            try
+            {
+                await _client.CreateTableAsync(new CreateTableRequest
+                {
+                    TableName = _settings.TableName,
+                    AttributeDefinitions = new List<AttributeDefinition>
+                    {
+                        new AttributeDefinition
+                        {
+                            AttributeType = ScalarAttributeType.S,
+                            AttributeName = ColumnNames.ResourceId
+                        }
+                    },
+                    KeySchema = new List<KeySchemaElement>
+                    {
+                        new KeySchemaElement
+                        {
+                            KeyType = KeyType.HASH,
+                            AttributeName = ColumnNames.ResourceId
+                        }
+                    },
+                    ProvisionedThroughput = new ProvisionedThroughput
+                    {
+                        ReadCapacityUnits = 1,
+                        WriteCapacityUnits = 1
+                    }
+                });
+
+                // need to wait a bit since the table has just been created
+                await Task.Delay(TimeSpan.FromSeconds(10));
+            }
+            catch (ResourceInUseException)
+            {
+                // ignore, already exists
             }
         }
     }
