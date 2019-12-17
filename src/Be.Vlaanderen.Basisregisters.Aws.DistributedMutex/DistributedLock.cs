@@ -47,6 +47,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                     TableName = options.TableName
                 });
 
+            _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
             _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
         }
 
