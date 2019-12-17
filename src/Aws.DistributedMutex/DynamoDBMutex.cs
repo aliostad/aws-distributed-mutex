@@ -4,7 +4,6 @@ using Amazon;
 using Amazon.DynamoDBv2.DocumentModel;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Aws.DistributedMutex
@@ -28,13 +27,12 @@ namespace Aws.DistributedMutex
         /// <param name="endpoint">region</param>
         /// <param name="settings">settings</param>
         public DynamoDBMutex(RegionEndpoint endpoint, DynamoDBMutexSettings settings = null)
-            : this (new AmazonDynamoDBClient(endpoint), settings)
+            : this(new AmazonDynamoDBClient(endpoint), settings)
         {
-            
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="client">AWS DynamoDB client</param>
         /// <param name="settings">settings</param>
@@ -51,12 +49,12 @@ namespace Aws.DistributedMutex
             {
                 try
                 {
-                    await _client.CreateTableAsync(new CreateTableRequest()
+                    await _client.CreateTableAsync(new CreateTableRequest
                     {
                         TableName = _settings.TableName,
                         AttributeDefinitions = new List<AttributeDefinition>
                         {
-                            new AttributeDefinition()
+                            new AttributeDefinition
                             {
                                 AttributeType = ScalarAttributeType.S,
                                 AttributeName = ColumnNames.ResourceId
@@ -64,7 +62,7 @@ namespace Aws.DistributedMutex
                         },
                         KeySchema = new List<KeySchemaElement>
                         {
-                            new KeySchemaElement()
+                            new KeySchemaElement
                             {
                                 KeyType = KeyType.HASH,
                                 AttributeName = ColumnNames.ResourceId
@@ -75,11 +73,12 @@ namespace Aws.DistributedMutex
                             ReadCapacityUnits = 1,
                             WriteCapacityUnits = 1
                         }
-                        });
+                    });
 
-                    await Task.Delay(TimeSpan.FromSeconds(10)); // need to wait a bit since the table has just been created 
+                    // need to wait a bit since the table has just been created
+                    await Task.Delay(TimeSpan.FromSeconds(10));
                 }
-                catch (ResourceInUseException e)
+                catch (ResourceInUseException)
                 {
                     // ignore, already exists
                 }
@@ -92,15 +91,24 @@ namespace Aws.DistributedMutex
         public async Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration)
         {
             var table = await GetTableAsync();
-            var doc = new Document();
-            doc[ColumnNames.HolderId] = _id;
-            doc[ColumnNames.ResourceId] = resourceId;
+
+            var doc = new Document
+            {
+                [ColumnNames.HolderId] = _id,
+                [ColumnNames.ResourceId] = resourceId
+            };
+
             var expiry = DateTimeOffset.UtcNow.Add(duration);
             doc[ColumnNames.LeaseExpiry] = expiry.ToString("O");
 
-            var expr = new Expression();
-            expr.ExpressionStatement = $"attribute_not_exists({ColumnNames.ResourceId}) OR {ColumnNames.LeaseExpiry} < :NOW";
-            expr.ExpressionAttributeValues[":NOW"] = DateTimeOffset.UtcNow.ToString("O");
+            var expr = new Expression
+            {
+                ExpressionStatement = $"attribute_not_exists({ColumnNames.ResourceId}) OR {ColumnNames.LeaseExpiry} < :NOW",
+                ExpressionAttributeValues =
+                {
+                    [":NOW"] = DateTimeOffset.UtcNow.ToString("O")
+                }
+            };
 
             try
             {
@@ -111,7 +119,7 @@ namespace Aws.DistributedMutex
 
                 return new LockToken(_id, resourceId, expiry);
             }
-            catch (ConditionalCheckFailedException e)
+            catch (ConditionalCheckFailedException)
             {
                 return null;
             }
@@ -121,10 +129,14 @@ namespace Aws.DistributedMutex
         public async Task ReleaseLockAsync(LockToken token)
         {
             var table = await GetTableAsync();
-            var doc = new Document();
-            doc[ColumnNames.HolderId] = token.HolderId;
-            doc[ColumnNames.ResourceId] = token.ResourceId;
-            doc[ColumnNames.LeaseExpiry] = token.LeaseExpiry.ToString("O");
+
+            var doc = new Document
+            {
+                [ColumnNames.HolderId] = token.HolderId,
+                [ColumnNames.ResourceId] = token.ResourceId,
+                [ColumnNames.LeaseExpiry] = token.LeaseExpiry.ToString("O")
+            };
+
             await table.DeleteItemAsync(doc);
         }
 
@@ -132,31 +144,39 @@ namespace Aws.DistributedMutex
         public async Task<LockToken> RenewAsync(LockToken token, TimeSpan duration)
         {
             var table = await GetTableAsync();
-            var doc = new Document();
-            doc[ColumnNames.HolderId] = token.HolderId;
-            doc[ColumnNames.ResourceId] = token.ResourceId;
+
+            var doc = new Document
+            {
+                [ColumnNames.HolderId] = token.HolderId,
+                [ColumnNames.ResourceId] = token.ResourceId
+            };
+
             var expiry = DateTimeOffset.UtcNow.Add(duration);
             doc[ColumnNames.LeaseExpiry] = expiry.ToString("O");
 
-            var expr = new Expression();
-            expr.ExpressionStatement = $"{ColumnNames.ResourceId} = :ID OR {ColumnNames.LeaseExpiry} < :NOW";
-            expr.ExpressionAttributeValues[":NOW"] = DateTimeOffset.UtcNow.ToString("O");
-            expr.ExpressionAttributeValues[":ID"] = token.ResourceId;
+            var expr = new Expression
+            {
+                ExpressionStatement = $"{ColumnNames.ResourceId} = :ID OR {ColumnNames.LeaseExpiry} < :NOW",
+                ExpressionAttributeValues =
+                {
+                    [":NOW"] = DateTimeOffset.UtcNow.ToString("O"),
+                    [":ID"] = token.ResourceId
+                }
+            };
 
             try
             {
-                await table.PutItemAsync(doc, new PutItemOperationConfig()
+                await table.PutItemAsync(doc, new PutItemOperationConfig
                 {
                     ConditionalExpression = expr
                 });
 
                 return token.WithNewExpiry(expiry);
             }
-            catch (ConditionalCheckFailedException e)
+            catch (ConditionalCheckFailedException)
             {
                 return null;
             }
-
         }
     }
 }
