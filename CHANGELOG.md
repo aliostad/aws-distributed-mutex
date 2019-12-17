@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.0.0...v1.1.0) (2019-12-17)
+
+
+### Features
+
+* allow configuring table name for simple lock ([107da0f](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/107da0f3a3fb4ad05cfe4cb1d2fb9051d97704e7))
+
 # 1.0.0 (2019-12-17)
 
 
