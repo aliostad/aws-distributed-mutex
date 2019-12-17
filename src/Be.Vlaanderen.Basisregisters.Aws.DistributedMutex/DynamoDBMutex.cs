@@ -28,7 +28,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         /// <param name="settings">settings</param>
         public DynamoDBMutex(
             RegionEndpoint endpoint,
-            DynamoDBMutexSettings settings = null)
+            DynamoDBMutexSettings? settings = null)
             : this(new AmazonDynamoDBClient(endpoint), settings)
         {
         }
@@ -39,14 +39,16 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         /// <param name="settings">settings</param>
         public DynamoDBMutex(
             IAmazonDynamoDB client,
-            DynamoDBMutexSettings settings = null)
+            DynamoDBMutexSettings? settings = null)
         {
             _settings = settings ?? new DynamoDBMutexSettings();
             _client = client;
         }
 
         /// <inheritdoc />
-        public async Task<LockToken> AcquireLockAsync(string resourceId, TimeSpan duration)
+        public async Task<LockToken?> AcquireLockAsync(
+            string resourceId,
+            TimeSpan duration)
         {
             var table = await GetTableAsync();
 
@@ -84,7 +86,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         }
 
         /// <inheritdoc />
-        public async Task<LockToken> RenewAsync(LockToken token, TimeSpan duration)
+        public async Task<LockToken?> RenewAsync(
+            LockToken token,
+            TimeSpan duration)
         {
             var table = await GetTableAsync();
 

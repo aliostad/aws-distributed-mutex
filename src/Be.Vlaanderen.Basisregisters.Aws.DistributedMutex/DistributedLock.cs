@@ -23,15 +23,18 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     public class DistributedLock<T>
     {
         private readonly DistributedLockOptions _options;
+        private readonly string _lockName;
 
         private readonly DynamoDBMutex _mutex;
         private readonly Timer _renewLeaseTimer = new Timer();
 
-        private LockToken _lockToken;
+        private LockToken? _lockToken;
 
         public DistributedLock(DistributedLockOptions options)
         {
             _options = options;
+
+            _lockName = typeof(T).FullName ?? Guid.NewGuid().ToString("N");
 
             _mutex = new DynamoDBMutex(
                 new AmazonDynamoDBClient(
@@ -49,7 +52,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public bool AcquireLock()
         {
-            _lockToken = _mutex.AcquireLockAsync(typeof(T).FullName, _options.LeasePeriod).GetAwaiter().GetResult();
+            _lockToken = _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod).GetAwaiter().GetResult();
 
             _renewLeaseTimer.Start();
 
