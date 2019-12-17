@@ -1,4 +1,4 @@
-﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
+namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
 {
     using Amazon;
     using System;
@@ -11,9 +11,7 @@
         {
             var env = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrEmpty(env))
-            {
                 Skip = $"Please set {envVar} env var to run.";
-            }
         }
     }
 
@@ -23,9 +21,7 @@
         {
             var env = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrEmpty(env))
-            {
                 Skip = $"Please set {envVar} env var to run.";
-            }
         }
     }
 
