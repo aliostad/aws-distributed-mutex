@@ -1,0 +1,156 @@
+{
+  "name": "aws-distributed-mutex",
+  "version": "2.0.0",
+  "description": "A distributed lock (mutex) implementation for AWS using DynamoDB.",
+  "author": "Basisregisters Vlaanderen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:informatievlaanderen/aws-distributed-mutex.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "8.1.0",
+    "@commitlint/config-conventional": "8.1.0",
+    "@commitlint/prompt": "8.1.0",
+    "@semantic-release/changelog": "3.0.4",
+    "@semantic-release/commit-analyzer": "6.3.0",
+    "@semantic-release/exec": "3.3.6",
+    "@semantic-release/git": "7.0.16",
+    "@semantic-release/github": "5.4.3",
+    "@semantic-release/npm": "5.1.15",
+    "@semantic-release/release-notes-generator": "7.3.0",
+    "commitizen": "4.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "form-data": "2.5.0",
+    "husky": "3.0.4",
+    "merge": "1.2.1",
+    "semantic-release": "15.13.23",
+    "lodash": "4.17.15"
+  },
+  "scripts": {
+    "commit": "git-cz",
+    "semantic-release": "semantic-release"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "branch": "master",
+    "verifyConditions": [
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ],
+    "analyzeCommits": {
+      "path": "@semantic-release/commit-analyzer",
+      "preset": "angular",
+      "releaseRules": [
+        {
+          "breaking": true,
+          "release": "major"
+        },
+        {
+          "type": "docs",
+          "scope": "README",
+          "release": "patch"
+        },
+        {
+          "type": "refactor",
+          "scope": "/core.*/",
+          "release": "minor"
+        },
+        {
+          "type": "refactor",
+          "release": "patch"
+        },
+        {
+          "type": "chore",
+          "scope": "breaking",
+          "release": "major"
+        }
+      ],
+      "parserOpts": {
+        "noteKeywords": [
+          "BREAKING CHANGE",
+          "BREAKING CHANGES",
+          "BREAKING"
+        ]
+      }
+    },
+    "generateNotes": {
+      "path": "@semantic-release/release-notes-generator",
+      "preset": "angular",
+      "parserOpts": {
+        "noteKeywords": [
+          "BREAKING CHANGE",
+          "BREAKING CHANGES",
+          "BREAKING"
+        ]
+      },
+      "writerOpts": {
+        "commitsSort": [
+          "scope",
+          "subject"
+        ]
+      }
+    },
+    "prepare": [
+      {
+        "path": "@semantic-release/changelog",
+        "changelogFile": "CHANGELOG.md"
+      },
+      {
+        "path": "@semantic-release/npm",
+        "npmPublish": false
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "BITBUCKET_BUILD_NUMBER=${nextRelease.version} ./build.sh Lib_Pack"
+      },
+      {
+        "path": "@semantic-release/git",
+        "assets": [
+          "CHANGELOG.md",
+          "package.json",
+          "package-lock.json"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "publish": [
+      {
+        "path": "@semantic-release/github",
+        "assets": [
+          {
+            "path": "dist/**/*.nupkg"
+          }
+        ]
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/Be.Vlaanderen.Basisregisters.Aws.DistributedMutex/Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.${nextRelease.version}.nupkg"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh"
+      }
+    ],
+    "success": [
+      "@semantic-release/github"
+    ],
+    "fail": false
+  }
+}

@@ -1,4 +1,4 @@
-﻿namespace Aws.DistributedMutex
+﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using System;
     using System.Threading.Tasks;

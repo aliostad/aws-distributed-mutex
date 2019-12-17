@@ -1,4 +1,4 @@
-﻿namespace Aws.DistributedMutex
+﻿namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using Amazon.DynamoDBv2;
     using Amazon.DynamoDBv2.Model;
