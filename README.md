@@ -25,6 +25,9 @@ public class Example
             new DistributedLockOptions
             {
                 Region = RegionEndpoint.EUWest1,
+                AwsAccessKeyId = "xxx",
+                AwsSecretAccessKey = "xxx",
+                TableName = "__DistributedLocks__",
                 LeasePeriod = TimeSpan.FromMinutes(5),
                 ThrowOnFailedRenew = true,
                 TerminateApplicationOnFailedRenew = true
