@@ -66,4 +66,29 @@
                 Environment.Exit(1);
         }
     }
+
+    //public class Example
+    //{
+    //    public void Main()
+    //    {
+    //        var distributedLock = new DistributedLock<Example>(
+    //            new DistributedLockOptions
+    //            {
+    //                Region = RegionEndpoint.EUWest1,
+    //                LeasePeriod = TimeSpan.FromMinutes(5),
+    //                ThrowOnFailedRenew = true,
+    //                TerminateApplicationOnFailedRenew = true
+    //            });
+
+    //        if (!distributedLock.AcquireLock())
+    //        {
+    //            Console.WriteLine("Could not get lock, another instance is busy");
+    //            return;
+    //        }
+
+    //        // Do stuff
+
+    //        distributedLock.ReleaseLock();
+    //    }
+    //}
 }
