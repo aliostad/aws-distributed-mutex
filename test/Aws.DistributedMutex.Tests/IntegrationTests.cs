@@ -1,7 +1,4 @@
 ﻿using Amazon;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
-using Aws.DistributedMutex;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -135,14 +132,13 @@ namespace Aws.DistributedMutex.Tests
         [EnvVarIgnoreFact(EnvVarName)]
         public async Task CreatesTableCorrectly()
         {
-            var m = new DynamoDBMutex(RegionEndpoint.EUWest1, new DynamoDBMutexSettings() { TableName = "LockTestDeleteMe", CreateTableIfNotExists = true} );
+            var m = new DynamoDBMutex(RegionEndpoint.EUWest1, new DynamoDBMutexSettings { TableName = "LockTestDeleteMe", CreateTableIfNotExists = true} );
             var resId = Guid.NewGuid().ToString("N");
             var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
             await m.ReleaseLockAsync(t);
             var t2 = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
             Assert.NotNull(t2);
         }
-
     }
 }
 
