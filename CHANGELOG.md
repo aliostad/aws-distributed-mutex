@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.1...v1.1.2) (2019-12-19)
+
+
+### Bug Fixes
+
+* release lock ([aa07823](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/aa078235a6cd4c5f9b90896430287edd599494eb))
+
 ## [1.1.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.0...v1.1.1) (2019-12-17)
 
 
