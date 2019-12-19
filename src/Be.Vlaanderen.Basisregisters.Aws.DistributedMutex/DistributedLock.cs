@@ -62,7 +62,10 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public void ReleaseLock()
         {
+            _mutex.ReleaseLockAsync(_lockToken).GetAwaiter().GetResult();
+
             _lockToken = null;
+
             _renewLeaseTimer.Stop();
         }
 
