@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.2...v1.2.0) (2020-01-02)
+
+
+### Features
+
+* add Run to support easily getting a simple lock and releasing it ([1fe0016](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/1fe0016419a8d68caa6d381e3549ff3f93228536))
+
 ## [1.1.2](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.1...v1.1.2) (2019-12-19)
 
 
