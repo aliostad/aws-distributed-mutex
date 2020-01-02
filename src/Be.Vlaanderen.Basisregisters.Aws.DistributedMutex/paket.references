@@ -1,3 +1,5 @@
+Microsoft.Extensions.Logging
+
 AWSSDK.DynamoDBv2
 
 SourceLink.Embed.AllSourceFiles

@@ -4,6 +4,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using System.Timers;
     using Amazon;
     using Amazon.DynamoDBv2;
+    using Microsoft.Extensions.Logging;
 
     public class DistributedLockOptions
     {
@@ -49,6 +50,39 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
             _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
+        }
+
+        public static void Run(
+            Action runFunc,
+            DistributedLockOptions options,
+            ILogger logger)
+        {
+            var distributedLock = new DistributedLock<T>(options);
+
+            var acquiredLock = false;
+            try
+            {
+                logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = distributedLock.AcquireLock();
+
+                if (!acquiredLock)
+                {
+                    logger.LogInformation("Could not get lock, another instance is busy.");
+                    return;
+                }
+
+                runFunc();
+            }
+            catch (Exception e)
+            {
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
+                throw;
+            }
+            finally
+            {
+                if (acquiredLock)
+                    distributedLock.ReleaseLock();
+            }
         }
 
         public bool AcquireLock()

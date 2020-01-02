@@ -16,6 +16,7 @@ description A distributed lock (mutex) implementation for AWS using DynamoDB.
 
 dependencies
   framework: netcoreapp31
+    Microsoft.Extensions.Logging >= LOCKEDVERSION
     AWSSDK.DynamoDBv2 >= LOCKEDVERSION
 
 files
