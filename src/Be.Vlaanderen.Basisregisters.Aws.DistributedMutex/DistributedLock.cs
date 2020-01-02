@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using System;
@@ -6,19 +8,55 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using Amazon.DynamoDBv2;
     using Microsoft.Extensions.Logging;
 
+    public class DistributedLockConfiguration
+    {
+        public const string SectionName = "DistributedLock";
+
+        public string Region { get; set; } = DistributedLockOptions.DefaultRegion;
+        public string AccessKeyId { get; set; }
+        public string AccessKeySecret { get; set; }
+        public string TableName { get; set; } = DistributedLockOptions.DefaultTableName;
+        public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
+        public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
+        public bool TerminateApplicationOnFailedRenew { get; set; } = DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+    }
+
     public class DistributedLockOptions
     {
-        public RegionEndpoint Region { get; set; }
+        public static string DefaultRegion = RegionEndpoint.EUWest1.SystemName;
+        public static string DefaultTableName = "__DistributedLocks__";
+        public static int DefaultLeasePeriodInMinutes = 5;
+        public static bool DefaultThrowOnFailedRenew = true;
+        public static bool DefaultTerminateApplicationOnFailedRenew = true;
+
+        public RegionEndpoint Region { get; set; } = RegionEndpoint.GetBySystemName(DefaultRegion);
 
         public string AwsAccessKeyId { get; set; }
         public string AwsSecretAccessKey { get; set; }
 
-        public string TableName { get; set; } = "__DistributedLocks__";
+        public string TableName { get; set; } = DefaultTableName;
 
-        public TimeSpan LeasePeriod { get; set; } = TimeSpan.FromMinutes(5);
+        public TimeSpan LeasePeriod { get; set; } = TimeSpan.FromMinutes(DefaultLeasePeriodInMinutes);
 
-        public bool ThrowOnFailedRenew { get; set; } = true;
-        public bool TerminateApplicationOnFailedRenew { get; set; } = true;
+        public bool ThrowOnFailedRenew { get; set; } = DefaultThrowOnFailedRenew;
+        public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew ;
+
+        public static DistributedLockOptions LoadFromConfiguration(IConfiguration configuration)
+        {
+            var config = new DistributedLockConfiguration();
+            configuration.GetSection(DistributedLockConfiguration.SectionName).Bind(config);
+
+            return new DistributedLockOptions
+            {
+                Region = RegionEndpoint.GetBySystemName(config.Region),
+                AwsAccessKeyId = config.AccessKeyId,
+                AwsSecretAccessKey = config.AccessKeySecret,
+                TableName = config.TableName,
+                LeasePeriod = TimeSpan.FromMinutes(config.LeasePeriodInMinutes),
+                ThrowOnFailedRenew = config.ThrowOnFailedRenew,
+                TerminateApplicationOnFailedRenew = config.TerminateApplicationOnFailedRenew
+            };
+        }
     }
 
     public class DistributedLock<T>
