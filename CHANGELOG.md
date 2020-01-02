@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.2.0...v1.3.0) (2020-01-02)
+
+
+### Features
+
+* add loading from configuration ([e2e6aff](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/e2e6aff0cc342a19239d5f572d8d00ddf1f6ff69))
+
 # [1.2.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.1.2...v1.2.0) (2020-01-02)
 
 
