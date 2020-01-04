@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.3.0...v1.4.0) (2020-01-04)
+
+
+### Features
+
+* use pay per request billing ([d6aa4eb](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/d6aa4eb8db94b28a98192f5075ca25a87bdda396))
+
 # [1.3.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.2.0...v1.3.0) (2020-01-02)
 
 
