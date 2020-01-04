@@ -175,11 +175,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                             AttributeName = ColumnNames.ResourceId
                         }
                     },
-                    ProvisionedThroughput = new ProvisionedThroughput
-                    {
-                        ReadCapacityUnits = 1,
-                        WriteCapacityUnits = 1
-                    }
+                    BillingMode = BillingMode.PAY_PER_REQUEST
                 });
 
                 // need to wait a bit since the table has just been created
