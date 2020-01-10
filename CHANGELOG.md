@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.4.0...v2.0.0) (2020-01-10)
+
+
+### Features
+
+* add enable toggle ([#3](https://github.com/informatievlaanderen/aws-distributed-mutex/issues/3)) ([90dd72c](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/90dd72cb87dbbd5032a105967b3c49281ff046f8))
+
+
+### BREAKING CHANGES
+
+* Require a logger
+
 # [1.4.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.3.0...v1.4.0) (2020-01-04)
 
 
