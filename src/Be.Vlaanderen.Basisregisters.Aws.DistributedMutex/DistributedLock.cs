@@ -19,6 +19,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
         public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
         public bool TerminateApplicationOnFailedRenew { get; set; } = DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+        public bool Enabled { get; set; } = true;
     }
 
     public class DistributedLockOptions
@@ -28,6 +29,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public static int DefaultLeasePeriodInMinutes = 5;
         public static bool DefaultThrowOnFailedRenew = true;
         public static bool DefaultTerminateApplicationOnFailedRenew = true;
+
+        public static DistributedLockOptions Defaults => new DistributedLockOptions();
 
         public RegionEndpoint Region { get; set; } = RegionEndpoint.GetBySystemName(DefaultRegion);
 
@@ -40,6 +43,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public bool ThrowOnFailedRenew { get; set; } = DefaultThrowOnFailedRenew;
         public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew ;
+        public bool Enabled { get; set; } = true;
 
         public static DistributedLockOptions LoadFromConfiguration(IConfiguration configuration)
         {
@@ -54,7 +58,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                 TableName = config.TableName,
                 LeasePeriod = TimeSpan.FromMinutes(config.LeasePeriodInMinutes),
                 ThrowOnFailedRenew = config.ThrowOnFailedRenew,
-                TerminateApplicationOnFailedRenew = config.TerminateApplicationOnFailedRenew
+                TerminateApplicationOnFailedRenew = config.TerminateApplicationOnFailedRenew,
+                Enabled = config.Enabled
             };
         }
     }
@@ -62,6 +67,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     public class DistributedLock<T>
     {
         private readonly DistributedLockOptions _options;
+        private readonly ILogger _logger;
         private readonly string _lockName;
 
         private readonly DynamoDBMutex _mutex;
@@ -69,9 +75,12 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         private LockToken? _lockToken;
 
-        public DistributedLock(DistributedLockOptions options)
+        private bool Disabled => !_options.Enabled;
+
+        public DistributedLock(DistributedLockOptions options, ILogger logger)
         {
             _options = options;
+            _logger = logger;
 
             _lockName = typeof(T).FullName ?? Guid.NewGuid().ToString("N");
 
@@ -95,7 +104,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             DistributedLockOptions options,
             ILogger logger)
         {
-            var distributedLock = new DistributedLock<T>(options);
+            var distributedLock = new DistributedLock<T>(options, logger);
 
             var acquiredLock = false;
             try
@@ -125,6 +134,12 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public bool AcquireLock()
         {
+            if (Disabled)
+            {
+                _logger.LogWarning($"Bypassing the expected lock. DistributedLock for {typeof(T).Name} is disabled in configuration");
+                return true;
+            }
+
             _lockToken = _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod).GetAwaiter().GetResult();
 
             _renewLeaseTimer.Start();
@@ -134,6 +149,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public void ReleaseLock()
         {
+            if (Disabled)
+                return;
+
             _mutex.ReleaseLockAsync(_lockToken).GetAwaiter().GetResult();
 
             _lockToken = null;
@@ -143,7 +161,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         private void RenewLease()
         {
-            if (_lockToken == null)
+            if (Disabled || _lockToken == null)
                 return;
 
             _lockToken = _mutex.RenewAsync(_lockToken, _options.LeasePeriod).GetAwaiter().GetResult();
