@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.0.0...v2.1.0) (2020-01-23)
+
+
+### Features
+
+* add RunAsync ([6392b2a](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/6392b2aeb59b0d225d6dc593ac27b7b38b363317))
+
 # [2.0.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v1.4.0...v2.0.0) (2020-01-10)
 
 
