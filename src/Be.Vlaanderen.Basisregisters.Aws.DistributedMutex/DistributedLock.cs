@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
@@ -104,6 +105,18 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             DistributedLockOptions options,
             ILogger logger)
         {
+            RunAsync(() =>
+            {
+                runFunc();
+                return Task.CompletedTask;
+            }, options, logger).GetAwaiter().GetResult();
+        }
+
+        public static async Task RunAsync(
+            Func<Task> runFunc,
+            DistributedLockOptions options,
+            ILogger logger)
+        {
             var distributedLock = new DistributedLock<T>(options, logger);
 
             var acquiredLock = false;
@@ -118,7 +131,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                     return;
                 }
 
-                runFunc();
+                await runFunc();
             }
             catch (Exception e)
             {
