@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.1.0...v2.2.0) (2020-01-31)
+
+
+### Features
+
+* upgrade netcoreapp31 and dependencies ([dd68ee2](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/dd68ee24f78e71bbc4c422bf49712eb5ba6bea99))
+
 # [2.1.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.0.0...v2.1.0) (2020-01-23)
 
 
