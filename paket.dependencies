@@ -9,18 +9,18 @@ source https://api.nuget.org/v3/index.json
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Logging 3.1.1
+nuget Microsoft.Extensions.Logging 3.1.2
 
-nuget AWSSDK.DynamoDBv2 3.3.104.23
+nuget AWSSDK.DynamoDBv2 3.3.105.5
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.3.0
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.3.2
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 16.4.0
+nuget Microsoft.NET.Test.Sdk 16.5.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
-nuget FluentAssertions 5.10.0
+nuget FluentAssertions 5.10.2
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true
