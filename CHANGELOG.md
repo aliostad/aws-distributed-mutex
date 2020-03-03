@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.0...v2.2.1) (2020-03-03)
+
+
+### Bug Fixes
+
+* bump netcore to 3.1.2 ([12b7c54](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/12b7c5449a23ab23d4e6036dafa194d8472cd6fc))
+
 # [2.2.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.1.0...v2.2.0) (2020-01-31)
 
 
