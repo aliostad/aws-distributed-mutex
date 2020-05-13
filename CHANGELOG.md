@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.1...v2.2.2) (2020-05-13)
+
+
+### Bug Fixes
+
+* move to GH-actions ([6d2bbc1](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/6d2bbc1076774b0c37c0b888d01b22d7f410d34b))
+
 ## [2.2.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.0...v2.2.1) (2020-03-03)
 
 
