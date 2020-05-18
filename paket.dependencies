@@ -2,12 +2,12 @@ framework: netcoreapp31
 source https://api.nuget.org/v3/index.json
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Logging 3.1.3
+nuget Microsoft.Extensions.Logging 3.1.4
 
-nuget AWSSDK.DynamoDBv2 3.3.106.2
+nuget AWSSDK.DynamoDBv2 3.3.106.4
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.0.6
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.1.0
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.6.1
