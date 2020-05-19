@@ -1,9 +1,9 @@
 RESTRICTION: == netcoreapp3.1
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    AWSSDK.Core (3.3.106.24)
-    AWSSDK.DynamoDBv2 (3.3.106.4)
-      AWSSDK.Core (>= 3.3.106.24 < 3.4)
+    AWSSDK.Core (3.3.106.25)
+    AWSSDK.DynamoDBv2 (3.3.106.5)
+      AWSSDK.Core (>= 3.3.106.25 < 3.4)
     Be.Vlaanderen.Basisregisters.Build.Pipeline (4.1)
       Fake.Core.Environment (>= 5.20)
       Fake.Core.Process (>= 5.20)
