@@ -1,3 +1,10 @@
+## [2.2.4](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.3...v2.2.4) (2020-05-19)
+
+
+### Bug Fixes
+
+* update dynamodb deps ([cd30fb8](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/cd30fb84e8a1095395aa7a860eafe69abd0a268f))
+
 ## [2.2.3](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.2...v2.2.3) (2020-05-18)
 
 
