@@ -74,7 +74,7 @@ var mutex = new DynamoDBMutex(client);
 The *resourceId* string can be anything - essentially is application dependent and as for this library, as long as resource IDs have a one to one relationship with the actual resources, it is fine.
 
 ``` csharp
-var token = await mutex.AcquireLockAsync("myid", TimeSpan.FromMinutes(1));
+var token = await mutex.AcquireLockAsync("my-id", TimeSpan.FromMinutes(1));
 ```
 
 If token is null, then it measn the operation was not successful, otherwise a token is returned. The token can be used to renew or release the lock (lease). If none happens, it will timeout although the physical record will stay. When you create the DynamoDB table, you can opt for TTL to clear up old leases.
