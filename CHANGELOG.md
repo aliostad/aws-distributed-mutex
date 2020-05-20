@@ -1,3 +1,10 @@
+## [2.2.5](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.4...v2.2.5) (2020-05-20)
+
+
+### Bug Fixes
+
+* force build ([8127d45](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/8127d45a7d9ddcd325b7e3767cc91fd9d541d6ff))
+
 ## [2.2.4](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.3...v2.2.4) (2020-05-19)
 
 
