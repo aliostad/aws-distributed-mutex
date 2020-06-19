@@ -2,17 +2,17 @@ framework: netcoreapp31
 source https://api.nuget.org/v3/index.json
 
 // PRODUCTION STUFF
-nuget Microsoft.Extensions.Logging 3.1.4
+nuget Microsoft.Extensions.Logging 3.1.5
 
-nuget AWSSDK.DynamoDBv2 3.3.106.5
+nuget AWSSDK.DynamoDBv2 3.3.106.20
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.1.0
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.1
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.6.1
 nuget xunit 2.4.1
-nuget xunit.runner.visualstudio 2.4.1
+nuget xunit.runner.visualstudio 2.4.2
 nuget FluentAssertions 5.10.3
 
 // BUILD STUFF
