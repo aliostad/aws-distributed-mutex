@@ -1,3 +1,10 @@
+## [2.2.8](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.7...v2.2.8) (2020-09-21)
+
+
+### Bug Fixes
+
+* move to 3.1.8 ([ebe91a7](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/ebe91a7bbc379f98c8a1022a7983af02ef114b7d))
+
 ## [2.2.7](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.6...v2.2.7) (2020-07-18)
 
 
