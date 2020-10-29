@@ -127,7 +127,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
                 if (!acquiredLock)
                 {
-                    logger.LogInformation("Could not get lock, another instance is busy.");
+                    logger.LogWarning("Could not get lock, another instance is busy.");
                     return;
                 }
 
