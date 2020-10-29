@@ -1,3 +1,10 @@
+## [2.2.9](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.8...v2.2.9) (2020-10-29)
+
+
+### Bug Fixes
+
+* increase logging to warning when a lock is refused ([fafb0f3](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/fafb0f3eb37642046d3f8df16dcb6f0b136fcecb))
+
 ## [2.2.8](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.7...v2.2.8) (2020-09-21)
 
 
