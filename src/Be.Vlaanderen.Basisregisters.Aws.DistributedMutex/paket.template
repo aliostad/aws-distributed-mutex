@@ -15,10 +15,10 @@ licenseUrl https://opensource.org/licenses/MIT
 description A distributed lock (mutex) implementation for AWS using DynamoDB.
 
 dependencies
-  framework: netcoreapp31
+  framework: net5.0
     Microsoft.Extensions.Logging >= LOCKEDVERSION
     AWSSDK.DynamoDBv2 >= LOCKEDVERSION
 
 files
-  bin\Release\netcoreapp3.1\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.dll => lib\netcoreapp3.1
-  bin\Release\netcoreapp3.1\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.pdb => lib\netcoreapp3.1
+  bin\Release\net5.0\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.dll => lib\net5.0
+  bin\Release\net5.0\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.pdb => lib\net5.0

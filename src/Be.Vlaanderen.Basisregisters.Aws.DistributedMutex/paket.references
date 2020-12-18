@@ -1,3 +1,4 @@
+Microsoft.Extensions.Configuration.Binder
 Microsoft.Extensions.Logging
 
 AWSSDK.DynamoDBv2
