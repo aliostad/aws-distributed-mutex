@@ -1,6 +1,6 @@
 {
   "name": "aws-distributed-mutex",
-  "version": "2.2.9",
+  "version": "2.2.10",
   "description": "A distributed lock (mutex) implementation for AWS using DynamoDB.",
   "author": "Basisregisters Vlaanderen",
   "license": "MIT",
