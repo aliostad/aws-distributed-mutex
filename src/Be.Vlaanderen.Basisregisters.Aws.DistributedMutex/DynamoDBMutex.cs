@@ -6,6 +6,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using Amazon.DynamoDBv2.DocumentModel;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public class DynamoDBMutex : IMutex
@@ -156,6 +157,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         {
             try
             {
+                if (await DoesTableExists())
+                    return;
+
                 await _client.CreateTableAsync(new CreateTableRequest
                 {
                     TableName = _settings.TableName,
@@ -185,6 +189,26 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             {
                 // ignore, already exists
             }
+        }
+
+        public async Task<bool> DoesTableExists()
+        {
+            // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LowLevelDotNetWorkingWithTables.html#LowLeveldotNetListTables
+            // Initial value for the first page of table names.
+            string lastEvaluatedTableName = null;
+            do
+            {
+                // Create a request object to specify optional parameters.
+                var request = new ListTablesRequest { ExclusiveStartTableName = lastEvaluatedTableName };
+
+                var result = await _client.ListTablesAsync(request);
+                if (result.TableNames.Any(t => t == _settings.TableName))
+                    return true;
+
+                lastEvaluatedTableName = result.LastEvaluatedTableName;
+            } while (lastEvaluatedTableName != null);
+
+            return false;
         }
     }
 }
