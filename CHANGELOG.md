@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.11...v2.3.0) (2021-04-29)
+
+
+### Features
+
+* add table exists check ([4c193fc](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/4c193fcd852baa17190ce627b91a7768ea42e8bd))
+
 ## [2.2.11](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.2.10...v2.2.11) (2021-02-02)
 
 
