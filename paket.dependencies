@@ -5,13 +5,13 @@ source https://api.nuget.org/v3/index.json
 nuget Microsoft.Extensions.Configuration.Binder 5.0.0
 nuget Microsoft.Extensions.Logging 5.0.0
 
-nuget AWSSDK.DynamoDBv2 3.5.4.24
+nuget AWSSDK.DynamoDBv2 3.7.0.29
 
 // VBR STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.2
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.3
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 16.8.3
+nuget Microsoft.NET.Test.Sdk 16.10.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.3
 nuget FluentAssertions 5.10.3
