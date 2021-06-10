@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.3.1...v2.4.0) (2021-06-10)
+
+
+### Features
+
+* create new constructor for DynamoDBMutex to handle no key/secret ([a1798b2](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/a1798b2ae5b2158221d3c8672be9ef970678fa94))
+
 ## [2.3.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.3.0...v2.3.1) (2021-05-28)
 
 
