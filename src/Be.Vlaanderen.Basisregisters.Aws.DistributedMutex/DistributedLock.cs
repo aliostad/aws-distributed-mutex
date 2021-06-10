@@ -19,7 +19,10 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public string TableName { get; set; } = DistributedLockOptions.DefaultTableName;
         public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
         public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
-        public bool TerminateApplicationOnFailedRenew { get; set; } = DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+
+        public bool TerminateApplicationOnFailedRenew { get; set; } =
+            DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+
         public bool Enabled { get; set; } = true;
     }
 
@@ -43,7 +46,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public TimeSpan LeasePeriod { get; set; } = TimeSpan.FromMinutes(DefaultLeasePeriodInMinutes);
 
         public bool ThrowOnFailedRenew { get; set; } = DefaultThrowOnFailedRenew;
-        public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew ;
+        public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew;
         public bool Enabled { get; set; } = true;
 
         public static DistributedLockOptions LoadFromConfiguration(IConfiguration configuration)
@@ -85,19 +88,36 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             _lockName = typeof(T).FullName ?? Guid.NewGuid().ToString("N");
 
-            _mutex = new DynamoDBMutex(
-                new AmazonDynamoDBClient(
-                    options.AwsAccessKeyId,
-                    options.AwsSecretAccessKey,
-                    options.Region),
+            _mutex = CreateDynamoDbMutex(options);
+
+            _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
+            _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
+        }
+
+        private static DynamoDBMutex CreateDynamoDbMutex(DistributedLockOptions options)
+        {
+            if (!string.IsNullOrWhiteSpace(options.AwsAccessKeyId) &&
+                !string.IsNullOrWhiteSpace(options.AwsSecretAccessKey))
+            {
+                return new DynamoDBMutex(
+                    new AmazonDynamoDBClient(
+                        options.AwsAccessKeyId,
+                        options.AwsSecretAccessKey,
+                        options.Region),
+                    new DynamoDBMutexSettings
+                    {
+                        CreateTableIfNotExists = true,
+                        TableName = options.TableName
+                    });
+            }
+
+            return new DynamoDBMutex(
+                new AmazonDynamoDBClient(options.Region),
                 new DynamoDBMutexSettings
                 {
                     CreateTableIfNotExists = true,
                     TableName = options.TableName
                 });
-
-            _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
-            _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
         }
 
         public static void Run(
@@ -149,7 +169,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         {
             if (Disabled)
             {
-                _logger.LogWarning($"Bypassing the expected lock. DistributedLock for {typeof(T).Name} is disabled in configuration");
+                _logger.LogWarning(
+                    $"Bypassing the expected lock. DistributedLock for {typeof(T).Name} is disabled in configuration");
                 return true;
             }
 
