@@ -1,3 +1,15 @@
+# [3.0.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.4.0...v3.0.0) (2022-03-25)
+
+
+### Features
+
+* move to dotnet 6.0.3 ([039b7c9](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/039b7c98a89bdae63e573aa9e32f254cb49a7a40))
+
+
+### BREAKING CHANGES
+
+* move to dotnet 6.0.3
+
 # [2.4.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.3.1...v2.4.0) (2021-06-10)
 
 
