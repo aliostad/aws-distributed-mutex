@@ -9,13 +9,14 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using System.Linq;
     using System.Threading.Tasks;
 
+    // ReSharper disable once InconsistentNaming
     public class DynamoDBMutex : IMutex
     {
         private readonly DynamoDBMutexSettings _settings;
         private readonly IAmazonDynamoDB _client;
         private readonly string _id = Guid.NewGuid().ToString("N");
 
-        private class ColumnNames
+        private static class ColumnNames
         {
             public const string ResourceId = "resourceId";
             public const string LeaseExpiry = "leaseExpiry";
@@ -31,8 +32,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             RegionEndpoint endpoint,
             DynamoDBMutexSettings? settings = null)
             : this(new AmazonDynamoDBClient(endpoint), settings)
-        {
-        }
+        { }
 
         /// <summary>
         /// </summary>
@@ -128,8 +128,13 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         }
 
         /// <inheritdoc />
-        public async Task ReleaseLockAsync(LockToken token)
+        public async Task ReleaseLockAsync(LockToken? token)
         {
+            if (token is null)
+            {
+                return;
+            }
+
             var table = await GetTableAsync();
 
             var doc = new Document
@@ -142,11 +147,12 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             await table.DeleteItemAsync(doc);
         }
 
-        /// <inheritdoc />
         private async Task<Table> GetTableAsync()
         {
             if (!_settings.CreateTableIfNotExists)
+            {
                 return Table.LoadTable(_client, _settings.TableName);
+            }
 
             await CreateTableAsync();
 
@@ -158,7 +164,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             try
             {
                 if (await DoesTableExists())
+                {
                     return;
+                }
 
                 await _client.CreateTableAsync(new CreateTableRequest
                 {
@@ -195,7 +203,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         {
             // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LowLevelDotNetWorkingWithTables.html#LowLeveldotNetListTables
             // Initial value for the first page of table names.
-            string lastEvaluatedTableName = null;
+            string? lastEvaluatedTableName = null;
             do
             {
                 // Create a request object to specify optional parameters.
@@ -203,7 +211,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
                 var result = await _client.ListTablesAsync(request);
                 if (result.TableNames.Any(t => t == _settings.TableName))
+                {
                     return true;
+                }
 
                 lastEvaluatedTableName = result.LastEvaluatedTableName;
             } while (lastEvaluatedTableName != null);

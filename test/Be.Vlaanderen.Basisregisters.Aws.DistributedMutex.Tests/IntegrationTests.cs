@@ -11,7 +11,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         {
             var env = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrEmpty(env))
+            {
                 Skip = $"Please set {envVar} env var to run.";
+            }
         }
     }
 
@@ -21,10 +23,13 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         {
             var env = Environment.GetEnvironmentVariable(envVar);
             if (string.IsNullOrEmpty(env))
+            {
                 Skip = $"Please set {envVar} env var to run.";
+            }
         }
     }
 
+    // ReSharper disable once InconsistentNaming
     public class DynamoDBMutexTests
     {
         private const string EnvVarName = "aws_access_key_id";
@@ -42,7 +47,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         {
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
             var resId = Guid.NewGuid().ToString("N");
-            var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
+            _ = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
             var t2 = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
             Assert.Null(t2);
         }
@@ -53,8 +58,15 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
             var resId = Guid.NewGuid().ToString("N");
             var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
-            var t2 = await m.RenewAsync(t, TimeSpan.FromSeconds(20));
-            Assert.NotNull(t2);
+            if (t is not null)
+            {
+                var t2 = await m.RenewAsync(t, TimeSpan.FromSeconds(20));
+                Assert.NotNull(t2);
+            }
+            else
+            {
+                Assert.True(false);
+            }
         }
 
         [EnvVarIgnoreFact(EnvVarName)]
@@ -63,9 +75,16 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
             var m = new DynamoDBMutex(RegionEndpoint.EUWest1);
             var resId = Guid.NewGuid().ToString("N");
             var t = await m.AcquireLockAsync(resId, TimeSpan.FromSeconds(10));
-            var other = new LockToken(t.ResourceId, "other", t.LeaseExpiry);
-            var t2 = await m.RenewAsync(other, TimeSpan.FromSeconds(20));
-            Assert.Null(t2);
+            if (t is not null)
+            {
+                var other = new LockToken(t.ResourceId, "other", t.LeaseExpiry);
+                var t2 = await m.RenewAsync(other, TimeSpan.FromSeconds(20));
+                Assert.Null(t2);
+            }
+            else
+            {
+                Assert.True(false);
+            }
         }
 
         [EnvVarIgnoreFact(EnvVarName)]
@@ -81,11 +100,19 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
 
             var i = 0;
             if (t1 != null)
+            {
                 i++;
+            }
+
             if (t2 != null)
+            {
                 i++;
+            }
+
             if (t3 != null)
+            {
                 i++;
+            }
 
             Assert.Equal(1, i);
         }
@@ -93,6 +120,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         [EnvVarIgnoreFact(EnvVarName)]
         public async Task RaceAsync()
         {
+            await Task.Yield();
+
             var m1 = new DynamoDBMutex(RegionEndpoint.EUWest1);
             var m2 = new DynamoDBMutex(RegionEndpoint.EUWest1);
             var m3 = new DynamoDBMutex(RegionEndpoint.EUWest1);
@@ -105,11 +134,19 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
 
             var i = 0;
             if (t1.Result != null)
+            {
                 i++;
+            }
+
             if (t2.Result != null)
+            {
                 i++;
+            }
+
             if (t3.Result != null)
+            {
                 i++;
+            }
 
             Assert.Equal(1, i);
         }

@@ -14,8 +14,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public const string SectionName = "DistributedLock";
 
         public string Region { get; set; } = DistributedLockOptions.DefaultRegion;
-        public string AccessKeyId { get; set; }
-        public string AccessKeySecret { get; set; }
+        public string? AccessKeyId { get; set; }
+        public string? AccessKeySecret { get; set; }
         public string TableName { get; set; } = DistributedLockOptions.DefaultTableName;
         public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
         public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
@@ -28,18 +28,18 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
     public class DistributedLockOptions
     {
-        public static string DefaultRegion = RegionEndpoint.EUWest1.SystemName;
-        public static string DefaultTableName = "__DistributedLocks__";
-        public static int DefaultLeasePeriodInMinutes = 5;
-        public static bool DefaultThrowOnFailedRenew = true;
-        public static bool DefaultTerminateApplicationOnFailedRenew = true;
+        public static readonly string DefaultRegion = RegionEndpoint.EUWest1.SystemName;
+        public const string DefaultTableName = "__DistributedLocks__";
+        public const int DefaultLeasePeriodInMinutes = 5;
+        public const bool DefaultThrowOnFailedRenew = true;
+        public const bool DefaultTerminateApplicationOnFailedRenew = true;
 
         public static DistributedLockOptions Defaults => new DistributedLockOptions();
 
         public RegionEndpoint Region { get; set; } = RegionEndpoint.GetBySystemName(DefaultRegion);
 
-        public string AwsAccessKeyId { get; set; }
-        public string AwsSecretAccessKey { get; set; }
+        public string? AwsAccessKeyId { get; set; }
+        public string? AwsSecretAccessKey { get; set; }
 
         public string TableName { get; set; } = DefaultTableName;
 
@@ -161,7 +161,9 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             finally
             {
                 if (acquiredLock)
+                {
                     distributedLock.ReleaseLock();
+                }
             }
         }
 
@@ -184,9 +186,13 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public void ReleaseLock()
         {
             if (Disabled)
+            {
                 return;
+            }
 
-            _mutex.ReleaseLockAsync(_lockToken).GetAwaiter().GetResult();
+            _mutex.ReleaseLockAsync(_lockToken)
+                .GetAwaiter()
+                .GetResult();
 
             _lockToken = null;
 
@@ -196,15 +202,21 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         private void RenewLease()
         {
             if (Disabled || _lockToken == null)
+            {
                 return;
+            }
 
             _lockToken = _mutex.RenewAsync(_lockToken, _options.LeasePeriod).GetAwaiter().GetResult();
 
             if (_lockToken == null && _options.ThrowOnFailedRenew)
-                throw new Exception("Failed to renew lease.");
+            {
+                throw new InvalidOperationException("Failed to renew lease.");
+            }
 
             if (_lockToken == null && _options.TerminateApplicationOnFailedRenew)
+            {
                 Environment.Exit(1);
+            }
         }
     }
 }
