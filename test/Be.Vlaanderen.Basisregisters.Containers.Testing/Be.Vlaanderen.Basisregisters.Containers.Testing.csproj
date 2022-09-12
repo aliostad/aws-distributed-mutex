@@ -1,18 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.DESKTOP-U2BB9KU.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
