@@ -15,13 +15,12 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public DynamoDbCircuitBreaker(string resourceName, TimeSpan duration, AmazonDynamoDBClient? dynamoDbClient = null)
         {
+            ResourceName = resourceName;
+            _duration = duration;
+
             var client = dynamoDbClient ?? new AmazonDynamoDBClient();
             var settings = new DynamoDBMutexSettings { CreateTableIfNotExists = true };
             _mutex = new DynamoDBMutex(client, settings);
-
-
-            _duration = duration;
-            ResourceName = resourceName;
         }
 
         public async Task Open()

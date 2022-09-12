@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using Amazon.DynamoDBv2;
@@ -9,6 +7,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     // ReSharper disable once InconsistentNaming
@@ -239,8 +238,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }, cancellationToken);
 
             return response is not null
-                && DateTimeOffset.TryParse(response[ColumnNames.LeaseExpiry], out var dateTimeOffset)
-                && dateTimeOffset >= DateTimeOffset.UtcNow;
+                && DateTimeOffset.TryParse(response[ColumnNames.LeaseExpiry], out var leaseExpiry)
+                && leaseExpiry >= DateTimeOffset.UtcNow;
         }
     }
 }
