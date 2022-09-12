@@ -1,3 +1,13 @@
+## [3.0.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v3.0.0...v3.0.1) (2022-09-12)
+
+
+### Bug Fixes
+
+* add query semantics & CircuitBreaker ([4c5fc9c](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/4c5fc9cfa8774bb9c24b39b4283e05f080de5c9d))
+* change workflow ([a163373](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/a163373191bad928bf8c792414ff6242bf4bc2a0))
+* remove unneede items in .csproj files ([f492ba3](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/f492ba3c318893a64da0fa514b335b20ff1e6de1))
+* resolve PR comments ([082859d](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/082859d1e9b162b4343229909a28a28e043f1ce9))
+
 # [3.0.0](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v2.4.0...v3.0.0) (2022-03-25)
 
 
