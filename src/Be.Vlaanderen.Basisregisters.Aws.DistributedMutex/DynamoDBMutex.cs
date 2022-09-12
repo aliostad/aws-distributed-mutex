@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 {
     using Amazon.DynamoDBv2;
@@ -10,7 +12,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     using System.Threading.Tasks;
 
     // ReSharper disable once InconsistentNaming
-    public class DynamoDBMutex : IMutex
+    public class DynamoDBMutex : IMutex, IMutexState
     {
         private readonly DynamoDBMutexSettings _settings;
         private readonly IAmazonDynamoDB _client;
@@ -219,6 +221,26 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             } while (lastEvaluatedTableName != null);
 
             return false;
+        }
+
+        public async Task<bool> IsActiveAsync(string resourceId, CancellationToken cancellationToken = default)
+        {
+            var table = await GetTableAsync();
+            var doc = new Document
+            {
+                [ColumnNames.HolderId] = _id,
+                [ColumnNames.ResourceId] = resourceId
+            };
+
+            var response = await table.GetItemAsync(doc, new GetItemOperationConfig
+            {
+                AttributesToGet = new List<string> { ColumnNames.LeaseExpiry },
+                ConsistentRead = true
+            }, cancellationToken);
+
+            return response is not null
+                && DateTimeOffset.TryParse(response[ColumnNames.LeaseExpiry], out var dateTimeOffset)
+                && dateTimeOffset >= DateTimeOffset.UtcNow;
         }
     }
 }

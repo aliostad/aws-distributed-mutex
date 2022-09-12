@@ -1,4 +1,9 @@
+appsettings.*.json
+*.Importer-*.config
+wwwroot/
+
 .vs/
+.vscode/
 .fake/
 .idea/
 .ionide/
@@ -8,18 +13,18 @@
 [Pp]aket-files/
 [Dd]ebug/
 [Rr]elease/
-[Bb]build/
+[Bb]uild/
 [Bb]in/
 [Oo]bj/
 [Xx]64/
 [Dd]ist/
+[Tt]est[Rr]esults/
 
 *.suo
 *.user
 *.sln.docstates
 *.ntvs*
 *.njsproj
-*.trx
 
 node_modules/
 bower_components/
@@ -30,9 +35,14 @@ yarn-error.log*
 *.ncrunchproject
 *ncrunchsolution
 _Ncrunch_*
+*nCrunchTemp*
 TestResults.xml
+tracing*.log
 
 .DS_Store
 ehthumbs.db
 Icon?
 Thumbs.db
+
+crabimport-request-*.json
+structurizr-*.json

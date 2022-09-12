@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29609.76
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32804.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B949EC84-C849-4EDB-8E6C-7AAF38B69A79}"
 EndProject
@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SEMVER.md = SEMVER.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Be.Vlaanderen.Basisregisters.Containers.Testing", "test\Be.Vlaanderen.Basisregisters.Containers.Testing\Be.Vlaanderen.Basisregisters.Containers.Testing.csproj", "{4BCB5015-1505-4AE7-BEC3-4D68B2900066}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{386FD3AB-5997-411B-BA10-B50CB9008B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{386FD3AB-5997-411B-BA10-B50CB9008B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{386FD3AB-5997-411B-BA10-B50CB9008B3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BCB5015-1505-4AE7-BEC3-4D68B2900066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BCB5015-1505-4AE7-BEC3-4D68B2900066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BCB5015-1505-4AE7-BEC3-4D68B2900066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BCB5015-1505-4AE7-BEC3-4D68B2900066}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{66E81965-97B2-4CDE-9642-825DA79EBBC3} = {B949EC84-C849-4EDB-8E6C-7AAF38B69A79}
 		{386FD3AB-5997-411B-BA10-B50CB9008B3E} = {0F1782C7-45F4-4F85-BA9D-78B2ACF74C20}
+		{4BCB5015-1505-4AE7-BEC3-4D68B2900066} = {0F1782C7-45F4-4F85-BA9D-78B2ACF74C20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E3F31D9F-1F69-4316-AC4F-EA72827ABE98}

@@ -3,6 +3,7 @@ source https://api.nuget.org/v3/index.json
 
 // PRODUCTION STUFF
 nuget Microsoft.Extensions.Configuration.Binder 6.0.0
+nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.Logging 6.0.0
 
 nuget AWSSDK.DynamoDBv2 3.7.3.14
@@ -11,6 +12,7 @@ nuget AWSSDK.DynamoDBv2 3.7.3.14
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3
 
 // TEST STUFF
+nuget Ductus.FluentDocker 2.10.55
 nuget Microsoft.NET.Test.Sdk 17.1.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.3
