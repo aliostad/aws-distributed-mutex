@@ -84,11 +84,11 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        dotnet build --nologo --no-restore --no-incremental --configuration Debug Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.sln.sln
+        dotnet build --nologo --no-restore --no-incremental --configuration Debug Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.sln
 
     - name: Test
       shell: bash
-      run: dotnet dotcover test --dcReportType=HTML --nologo --no-build Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.sln.sln
+      run: dotnet dotcover test --dcReportType=HTML --nologo --no-build Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.sln
 
     - name: Sonar end build & analyze
       env:
