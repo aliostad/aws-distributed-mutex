@@ -92,3 +92,4 @@ For renewing, pass the original token again to renew for the intended duration. 
 ``` csharp
 var newToken = mutex.RenewAsync(token, TimeSpan.FromMinutes(1));
 ```
+ 
