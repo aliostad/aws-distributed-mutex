@@ -146,16 +146,30 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             ILogger logger)
         {
             var distributedLock = new DistributedLock<T>(options, logger);
+            await distributedLock.RunAsync(runFunc);
+        }
 
+        public void Run(
+            Action runFunc)
+        {
+            RunAsync(() =>
+            {
+                runFunc();
+                return Task.CompletedTask;
+            }).GetAwaiter().GetResult();
+        }
+
+        public async Task RunAsync(Func<Task> runFunc)
+        {
             var acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
-                acquiredLock = distributedLock.AcquireLock();
+                _logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = AcquireLock();
 
                 if (!acquiredLock)
                 {
-                    logger.LogWarning("Could not get lock, another instance is busy.");
+                    _logger.LogWarning("Could not get lock, another instance is busy.");
                     return;
                 }
 
@@ -163,14 +177,14 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
+                _logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
                 throw;
             }
             finally
             {
                 if (acquiredLock)
                 {
-                    distributedLock.ReleaseLock();
+                    ReleaseLock();
                 }
             }
         }
