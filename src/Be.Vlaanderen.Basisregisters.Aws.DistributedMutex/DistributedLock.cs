@@ -82,11 +82,19 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         private bool Disabled => !_options.Enabled;
 
         public DistributedLock(DistributedLockOptions options, ILogger logger)
+            : this(options, typeof(T).FullName ?? Guid.NewGuid().ToString("N"), logger)
         {
+        }
+
+        public DistributedLock(DistributedLockOptions options, string lockName, ILogger logger)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(lockName);
+            ArgumentNullException.ThrowIfNull(logger);
+
             _options = options;
             _logger = logger;
-
-            _lockName = typeof(T).FullName ?? Guid.NewGuid().ToString("N");
+            _lockName = lockName;
 
             _mutex = CreateDynamoDbMutex(options);
 
