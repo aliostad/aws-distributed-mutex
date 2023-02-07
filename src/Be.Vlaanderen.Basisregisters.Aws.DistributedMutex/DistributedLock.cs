@@ -19,9 +19,11 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public string TableName { get; set; } = DistributedLockOptions.DefaultTableName;
         public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
         public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
-
         public bool TerminateApplicationOnFailedRenew { get; set; } =
             DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+        public bool ThrowOnFailedAcquire { get; set; } = DistributedLockOptions.DefaultThrowOnFailedAcquire;
+        public bool TerminateApplicationOnFailedAcquire { get; set; } =
+            DistributedLockOptions.DefaultTerminateApplicationOnFailedAcquire;
 
         public bool Enabled { get; set; } = true;
     }
@@ -33,6 +35,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public const int DefaultLeasePeriodInMinutes = 5;
         public const bool DefaultThrowOnFailedRenew = true;
         public const bool DefaultTerminateApplicationOnFailedRenew = true;
+        public const bool DefaultThrowOnFailedAcquire = false;
+        public const bool DefaultTerminateApplicationOnFailedAcquire = false;
 
         public static DistributedLockOptions Defaults => new DistributedLockOptions();
 
@@ -47,6 +51,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public bool ThrowOnFailedRenew { get; set; } = DefaultThrowOnFailedRenew;
         public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew;
+        public bool ThrowOnFailedAcquire { get; set; } = DefaultThrowOnFailedAcquire;
+        public bool TerminateApplicationOnFailedAcquire { get; set; } = DefaultTerminateApplicationOnFailedAcquire;
         public bool Enabled { get; set; } = true;
 
         public static DistributedLockOptions LoadFromConfiguration(IConfiguration configuration)
@@ -63,6 +69,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                 LeasePeriod = TimeSpan.FromMinutes(config.LeasePeriodInMinutes),
                 ThrowOnFailedRenew = config.ThrowOnFailedRenew,
                 TerminateApplicationOnFailedRenew = config.TerminateApplicationOnFailedRenew,
+                ThrowOnFailedAcquire = config.ThrowOnFailedAcquire,
+                TerminateApplicationOnFailedAcquire = config.TerminateApplicationOnFailedAcquire,
                 Enabled = config.Enabled
             };
         }
@@ -199,6 +207,16 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }
 
             _lockToken = _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod).GetAwaiter().GetResult();
+
+            if (_lockToken == null && _options.ThrowOnFailedAcquire)
+            {
+                throw new InvalidOperationException("Failed to acquire lease.");
+            }
+
+            if (_lockToken == null && _options.TerminateApplicationOnFailedAcquire)
+            {
+                Environment.Exit(1);
+            }
 
             _renewLeaseTimer.Start();
 
