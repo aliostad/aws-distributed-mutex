@@ -19,9 +19,11 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public string TableName { get; set; } = DistributedLockOptions.DefaultTableName;
         public int LeasePeriodInMinutes { get; set; } = DistributedLockOptions.DefaultLeasePeriodInMinutes;
         public bool ThrowOnFailedRenew { get; set; } = DistributedLockOptions.DefaultThrowOnFailedRenew;
-
         public bool TerminateApplicationOnFailedRenew { get; set; } =
             DistributedLockOptions.DefaultTerminateApplicationOnFailedRenew;
+        public bool ThrowOnFailedAcquire { get; set; } = DistributedLockOptions.DefaultThrowOnFailedAcquire;
+        public bool TerminateApplicationOnFailedAcquire { get; set; } =
+            DistributedLockOptions.DefaultTerminateApplicationOnFailedAcquire;
 
         public bool Enabled { get; set; } = true;
     }
@@ -33,6 +35,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         public const int DefaultLeasePeriodInMinutes = 5;
         public const bool DefaultThrowOnFailedRenew = true;
         public const bool DefaultTerminateApplicationOnFailedRenew = true;
+        public const bool DefaultThrowOnFailedAcquire = false;
+        public const bool DefaultTerminateApplicationOnFailedAcquire = false;
 
         public static DistributedLockOptions Defaults => new DistributedLockOptions();
 
@@ -47,6 +51,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
         public bool ThrowOnFailedRenew { get; set; } = DefaultThrowOnFailedRenew;
         public bool TerminateApplicationOnFailedRenew { get; set; } = DefaultTerminateApplicationOnFailedRenew;
+        public bool ThrowOnFailedAcquire { get; set; } = DefaultThrowOnFailedAcquire;
+        public bool TerminateApplicationOnFailedAcquire { get; set; } = DefaultTerminateApplicationOnFailedAcquire;
         public bool Enabled { get; set; } = true;
 
         public static DistributedLockOptions LoadFromConfiguration(IConfiguration configuration)
@@ -63,6 +69,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                 LeasePeriod = TimeSpan.FromMinutes(config.LeasePeriodInMinutes),
                 ThrowOnFailedRenew = config.ThrowOnFailedRenew,
                 TerminateApplicationOnFailedRenew = config.TerminateApplicationOnFailedRenew,
+                ThrowOnFailedAcquire = config.ThrowOnFailedAcquire,
+                TerminateApplicationOnFailedAcquire = config.TerminateApplicationOnFailedAcquire,
                 Enabled = config.Enabled
             };
         }
@@ -82,11 +90,19 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         private bool Disabled => !_options.Enabled;
 
         public DistributedLock(DistributedLockOptions options, ILogger logger)
+            : this(options, typeof(T).FullName ?? Guid.NewGuid().ToString("N"), logger)
         {
+        }
+
+        public DistributedLock(DistributedLockOptions options, string lockName, ILogger logger)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+            ArgumentNullException.ThrowIfNull(lockName);
+            ArgumentNullException.ThrowIfNull(logger);
+
             _options = options;
             _logger = logger;
-
-            _lockName = typeof(T).FullName ?? Guid.NewGuid().ToString("N");
+            _lockName = lockName;
 
             _mutex = CreateDynamoDbMutex(options);
 
@@ -138,16 +154,30 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             ILogger logger)
         {
             var distributedLock = new DistributedLock<T>(options, logger);
+            await distributedLock.RunAsync(runFunc);
+        }
 
+        public void Run(
+            Action runFunc)
+        {
+            RunAsync(() =>
+            {
+                runFunc();
+                return Task.CompletedTask;
+            }).GetAwaiter().GetResult();
+        }
+
+        public async Task RunAsync(Func<Task> runFunc)
+        {
             var acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
-                acquiredLock = distributedLock.AcquireLock();
+                _logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = AcquireLock();
 
                 if (!acquiredLock)
                 {
-                    logger.LogWarning("Could not get lock, another instance is busy.");
+                    _logger.LogWarning("Could not get lock, another instance is busy.");
                     return;
                 }
 
@@ -155,14 +185,14 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
+                _logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
                 throw;
             }
             finally
             {
                 if (acquiredLock)
                 {
-                    distributedLock.ReleaseLock();
+                    ReleaseLock();
                 }
             }
         }
@@ -177,6 +207,16 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }
 
             _lockToken = _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod).GetAwaiter().GetResult();
+
+            if (_lockToken == null && _options.ThrowOnFailedAcquire)
+            {
+                throw new InvalidOperationException("Failed to acquire lease.");
+            }
+
+            if (_lockToken == null && _options.TerminateApplicationOnFailedAcquire)
+            {
+                Environment.Exit(1);
+            }
 
             _renewLeaseTimer.Start();
 
