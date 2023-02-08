@@ -82,7 +82,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         private readonly ILogger _logger;
         private readonly string _lockName;
 
-        private readonly DynamoDBMutex _mutex;
+        private readonly IMutex _mutex;
         private readonly Timer _renewLeaseTimer = new Timer();
 
         private LockToken? _lockToken;
@@ -104,13 +104,13 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             _logger = logger;
             _lockName = lockName;
 
-            _mutex = CreateDynamoDbMutex(options);
+            _mutex = CreateMutex(options);
 
             _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
             _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
         }
 
-        private static DynamoDBMutex CreateDynamoDbMutex(DistributedLockOptions options)
+        protected virtual IMutex CreateMutex(DistributedLockOptions options)
         {
             if (!string.IsNullOrWhiteSpace(options.AwsAccessKeyId) &&
                 !string.IsNullOrWhiteSpace(options.AwsSecretAccessKey))
@@ -210,7 +210,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             if (_lockToken == null && _options.ThrowOnFailedAcquire)
             {
-                throw new InvalidOperationException("Failed to acquire lease.");
+                throw new AcquireLockFailedException();
             }
 
             if (_lockToken == null && _options.TerminateApplicationOnFailedAcquire)
