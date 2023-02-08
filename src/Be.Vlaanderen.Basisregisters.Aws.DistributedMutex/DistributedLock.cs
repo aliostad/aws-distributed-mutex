@@ -111,7 +111,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             }
 
             _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
-            _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
+            _renewLeaseTimer.Elapsed += async (sender, args) => await RenewLeaseAsync();
         }
 
         protected virtual IMutex CreateMutex(DistributedLockOptions options)
@@ -161,8 +161,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             await distributedLock.RunAsync(runFunc);
         }
 
-        public void Run(
-            Action runFunc)
+        public void Run(Action runFunc)
         {
             RunAsync(() =>
             {
@@ -177,7 +176,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             try
             {
                 _logger.LogInformation("Trying to acquire lock.");
-                acquiredLock = AcquireLock();
+                acquiredLock = await AcquireLockAsync();
 
                 if (!acquiredLock)
                 {
@@ -196,12 +195,12 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             {
                 if (acquiredLock)
                 {
-                    ReleaseLock();
+                    await ReleaseLockAsync();
                 }
             }
         }
 
-        public bool AcquireLock()
+        public async Task<bool> AcquireLockAsync()
         {
             if (Disabled)
             {
@@ -210,7 +209,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
                 return true;
             }
 
-            _lockToken = _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod).GetAwaiter().GetResult();
+            _lockToken = await _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod);
 
             if (_lockToken == null && _options.ThrowOnFailedAcquire)
             {
@@ -227,30 +226,28 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             return _lockToken != null;
         }
 
-        public void ReleaseLock()
+        public async Task ReleaseLockAsync()
         {
             if (Disabled)
             {
                 return;
             }
 
-            _mutex.ReleaseLockAsync(_lockToken)
-                .GetAwaiter()
-                .GetResult();
+            await _mutex.ReleaseLockAsync(_lockToken);
 
             _lockToken = null;
 
             _renewLeaseTimer.Stop();
         }
 
-        private void RenewLease()
+        private async Task RenewLeaseAsync()
         {
             if (Disabled || _lockToken == null)
             {
                 return;
             }
 
-            _lockToken = _mutex.RenewAsync(_lockToken, _options.LeasePeriod).GetAwaiter().GetResult();
+            _lockToken = await _mutex.RenewAsync(_lockToken, _options.LeasePeriod);
 
             if (_lockToken == null && _options.ThrowOnFailedRenew)
             {
