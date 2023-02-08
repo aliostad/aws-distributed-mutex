@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
 
+[Serializable]
 public class AcquireLockFailedException : InvalidOperationException
 {
     public AcquireLockFailedException()
