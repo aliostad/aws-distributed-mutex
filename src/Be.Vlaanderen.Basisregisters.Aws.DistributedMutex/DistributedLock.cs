@@ -105,6 +105,10 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             _lockName = lockName;
 
             _mutex = CreateMutex(options);
+            if (_mutex == null)
+            {
+                throw new NullReferenceException($"{nameof(CreateMutex)} result can't be null");
+            }
 
             _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
             _renewLeaseTimer.Elapsed += (sender, args) => RenewLease();
