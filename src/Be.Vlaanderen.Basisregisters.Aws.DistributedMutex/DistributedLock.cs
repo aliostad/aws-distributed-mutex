@@ -104,17 +104,17 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
             _logger = logger;
             _lockName = lockName;
 
-            _mutex = CreateMutex(options);
+            _mutex = CreateDynamoDbMutex(options);
             if (_mutex == null)
             {
-                throw new ArgumentException($"{nameof(CreateMutex)} result can't be null");
+                throw new ArgumentException($"{nameof(CreateDynamoDbMutex)} result can't be null");
             }
 
             _renewLeaseTimer.Interval = options.LeasePeriod.TotalMilliseconds / 2;
             _renewLeaseTimer.Elapsed += async (sender, args) => await RenewLeaseAsync();
         }
 
-        protected virtual IMutex CreateMutex(DistributedLockOptions options)
+        private static IMutex CreateDynamoDbMutex(DistributedLockOptions options)
         {
             if (!string.IsNullOrWhiteSpace(options.AwsAccessKeyId) &&
                 !string.IsNullOrWhiteSpace(options.AwsSecretAccessKey))
