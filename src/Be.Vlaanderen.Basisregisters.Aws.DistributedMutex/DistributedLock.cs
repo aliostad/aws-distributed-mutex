@@ -248,7 +248,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             if (_lockToken == null && _options.ThrowOnFailedRenew)
             {
-                throw new InvalidOperationException("Failed to renew lease.");
+                throw new RenewLeaseFailedException();
             }
 
             if (_lockToken == null && _options.TerminateApplicationOnFailedRenew)
