@@ -1,3 +1,27 @@
+## [3.0.2](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v3.0.1...v3.0.2) (2023-02-09)
+
+
+### Bug Fixes
+
+* add custom lockName constructor to DistributedLock ([b2eabf0](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/b2eabf0a084593350689ff3d413e8e802119e7b1))
+* add missing Serializable attribute to exception ([67e572f](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/67e572f0855aa9d0f80422ea89119ef8883ce096))
+* add non-static RunAsync for DistributedLock ([90eaae3](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/90eaae3933f7eed83de65418b1cd572d154bfe8e))
+* add nuget to dependabot ([c0d83b6](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/c0d83b64f446adfd15f12567e48da44493fb90d7))
+* add option to throw/terminate on acquire lock ([37d4d1e](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/37d4d1eb07fd53afaf0ea7e5f7d441e11fa02286))
+* add specific exception for acquire lock failure + use IMutex instead of DynamoDBMutex for testability ([947efbc](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/947efbc09150bc5ed9eea8672a123328713aeafc))
+* cleanup ([38e8e25](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/38e8e2562141f450e16c3e95b2efb04f47430061))
+* ensure CreateMutex result is not null ([396279b](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/396279bd4c9b6ab1a712f4bd6076b587d7f4545f))
+* fix solution name ([9c5f645](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/9c5f645809b2ab7e40d2008fcc0559f769af70a8))
+* really use VBR_SONAR_TOKEN ([b3dfc4b](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/b3dfc4b1fee0cef216ee93cc1cdc3a04a8ef1a8f))
+* revert virtual method CreateMutex ([0c69d75](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/0c69d7505075dcad79544b174f49d1a3cce7f497))
+* skip failing tests ([ef4ddb6](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/ef4ddb67c326125a4c7d4ee65edb2a0048595f0b))
+* throw ArgumentException instead of NullReferenceException ([4b8e223](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/4b8e223b27488b7dc3bcd6ced8b7b7c323b898ed))
+* use await for Async methods ([c4ac1bf](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/c4ac1bfd52e02f718a73893e26205e578010b904))
+* use VBR_SONAR_TOKEN ([7c8c8dd](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/7c8c8ddd65b048696b104937b0db7dc4b7f1d750))
+* version bump ([219e48a](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/219e48a5f79a6c1ea4e4c50b39a25ccaf91606a5))
+* version bump ([f65e028](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/f65e028832a2f925d2913d71f98f92d8d1742d64))
+* version bump ([c6a2e22](https://github.com/informatievlaanderen/aws-distributed-mutex/commit/c6a2e222d33b5ef7742f7289a15c549d1d33da8d))
+
 ## [3.0.1](https://github.com/informatievlaanderen/aws-distributed-mutex/compare/v3.0.0...v3.0.1) (2022-09-12)
 
 
