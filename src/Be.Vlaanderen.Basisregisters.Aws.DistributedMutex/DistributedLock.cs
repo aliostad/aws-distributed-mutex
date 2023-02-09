@@ -31,6 +31,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     public class DistributedLockOptions
     {
         public static readonly string DefaultRegion = RegionEndpoint.EUWest1.SystemName;
+        
         public const string DefaultTableName = "__DistributedLocks__";
         public const int DefaultLeasePeriodInMinutes = 5;
         public const bool DefaultThrowOnFailedRenew = true;
