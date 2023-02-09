@@ -31,7 +31,7 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
     public class DistributedLockOptions
     {
         public static readonly string DefaultRegion = RegionEndpoint.EUWest1.SystemName;
-        
+
         public const string DefaultTableName = "__DistributedLocks__";
         public const int DefaultLeasePeriodInMinutes = 5;
         public const bool DefaultThrowOnFailedRenew = true;
@@ -89,6 +89,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
         private LockToken? _lockToken;
 
         private bool Disabled => !_options.Enabled;
+
+        public event EventHandler? RenewLeaseFailed;
 
         public DistributedLock(DistributedLockOptions options, ILogger logger)
             : this(options, typeof(T).FullName ?? Guid.NewGuid().ToString("N"), logger)
@@ -208,14 +210,17 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             _lockToken = await _mutex.AcquireLockAsync(_lockName, _options.LeasePeriod);
 
-            if (_lockToken == null && _options.ThrowOnFailedAcquire)
+            if (_lockToken == null)
             {
-                throw new AcquireLockFailedException();
-            }
+                if (_options.ThrowOnFailedAcquire)
+                {
+                    throw new AcquireLockFailedException();
+                }
 
-            if (_lockToken == null && _options.TerminateApplicationOnFailedAcquire)
-            {
-                Environment.Exit(1);
+                if (_options.TerminateApplicationOnFailedAcquire)
+                {
+                    Environment.Exit(1);
+                }
             }
 
             _renewLeaseTimer.Start();
@@ -246,14 +251,19 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
             _lockToken = await _mutex.RenewAsync(_lockToken, _options.LeasePeriod);
 
-            if (_lockToken == null && _options.ThrowOnFailedRenew)
+            if (_lockToken == null)
             {
-                throw new RenewLeaseFailedException();
-            }
+                RenewLeaseFailed?.Invoke(this, EventArgs.Empty);
 
-            if (_lockToken == null && _options.TerminateApplicationOnFailedRenew)
-            {
-                Environment.Exit(1);
+                if (_options.ThrowOnFailedRenew)
+                {
+                    throw new RenewLeaseFailedException();
+                }
+
+                if (_options.TerminateApplicationOnFailedRenew)
+                {
+                    Environment.Exit(1);
+                }
             }
         }
     }
