@@ -1,9 +1,9 @@
 RESTRICTION: == net6.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    AWSSDK.Core (3.7.9.1)
-    AWSSDK.DynamoDBv2 (3.7.3.14)
-      AWSSDK.Core (>= 3.7.9.1 < 4.0)
+    AWSSDK.Core (3.7.106.8)
+    AWSSDK.DynamoDBv2 (3.7.102.15)
+      AWSSDK.Core (>= 3.7.106.8 < 4.0)
     Be.Vlaanderen.Basisregisters.Build.Pipeline (6.0.3)
       Fake.Core.Environment (>= 5.22)
       Fake.Core.Process (>= 5.22)

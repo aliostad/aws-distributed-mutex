@@ -6,7 +6,8 @@ nuget Microsoft.Extensions.Configuration.Binder 6.0.0
 nuget Microsoft.Extensions.Configuration.Json 6.0.0
 nuget Microsoft.Extensions.Logging 6.0.0
 
-nuget AWSSDK.DynamoDBv2 3.7.3.14
+nuget AWSSDK.Core 3.7.106.8
+nuget AWSSDK.DynamoDBv2 3.7.102.15
 
 // VBR STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3
